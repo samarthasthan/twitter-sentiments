@@ -1,5 +1,37 @@
 services:
 
+  # Kafka
+  kafka:
+    build: ./kafka
+    container_name: kafka
+    ports:
+      - ${KAFKA_EXTERNAL_PORT}:9092
+    networks:
+      - services
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "./wait-for.sh kafka:${KAFKA_INTERNAL_PORT} -- ./kafka_setup.sh"
+        ]
+      interval: 30s
+      timeout: 30s
+      retries: 10
+      start_period: 30s
+
+  fetcher:
+    build: ./fetcher
+    container_name: fetcher
+    environment:
+      - WEBSOCKET_PORT=${WEBSOCKET_PORT}
+      - KAFKA_INTERNAL_PORT=${KAFKA_INTERNAL_PORT}
+    networks:
+      - services
+    command: ["./app"]
+    depends_on:
+      kafka:
+        condition: service_healthy
+
   twitterapi:
     build: ./twitter-api
     container_name: twitterapi
@@ -11,14 +43,27 @@ services:
     depends_on:
       - fetcher
 
-  fetcher:
-    build: ./fetcher
-    container_name: fetcher
+  analyser:
+    build: ./analyser
+    container_name: analyser
     environment:
-      - WEBSOCKET_PORT=${WEBSOCKET_PORT}
+      - KAFKA_INTERNAL_PORT=${KAFKA_INTERNAL_PORT}
     networks:
       - services
     command: ["./app"]
+    depends_on:
+      - twitterapi
+  
+  store:
+    build: ./store
+    container_name: store
+    environment:
+      - KAFKA_INTERNAL_PORT=${KAFKA_INTERNAL_PORT}
+    networks:
+      - services
+    command: ["./app"]
+    depends_on:
+      - analyser
 
 networks:
   services:
