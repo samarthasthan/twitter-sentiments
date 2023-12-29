@@ -1,0 +1,25 @@
+services:
+
+  twitterapi:
+    build: ./twitter-api
+    container_name: twitterapi
+    environment:
+      - WEBSOCKET_ENDPOINT=${WEBSOCKET_ENDPOINT}
+    networks:
+      - services
+    command: ["./app"]
+    depends_on:
+      - fetcher
+
+  fetcher:
+    build: ./fetcher
+    container_name: fetcher
+    environment:
+      - WEBSOCKET_PORT=${WEBSOCKET_PORT}
+    networks:
+      - services
+    command: ["./app"]
+
+networks:
+  services:
+    driver: bridge
