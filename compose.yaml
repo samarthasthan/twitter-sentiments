@@ -59,11 +59,27 @@ services:
     container_name: store
     environment:
       - KAFKA_INTERNAL_PORT=${KAFKA_INTERNAL_PORT}
+      - DB_USERNAME=${MYSQL_USER}
+      - DB_PASSWORD=${MYSQL_PASSWORD}
+      - DB_NAME=${MYSQL_DATABASE}
+      - DB_PORT=${MYSQL_PORT}
     networks:
       - services
     command: ["./app"]
     depends_on:
       - analyser
+      - storedb
+  
+  storedb:
+    image: mysql
+    container_name: storedb
+    ports:
+      - 3306:3306
+    networks:
+      - services
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
 
 networks:
   services:
