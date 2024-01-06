@@ -26,3 +26,12 @@ func (db *MySqlDB) CreateTweet(tweets []*types.SentimentResult) error {
 	}
 	return nil
 }
+
+func (db *MySqlDB) GetTweets(limit int, offset int) ([]types.SentimentResult, error) {
+	var res []types.SentimentResult
+	result := db.DB.Limit(limit).Offset(offset).Find(&res)
+	if result.Error != nil {
+		return res, result.Error
+	}
+	return res, nil
+}

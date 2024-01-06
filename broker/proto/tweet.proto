@@ -1,0 +1,25 @@
+syntax="proto3";
+
+package tweet;
+
+option go_package="github.com/samarthasthan/twitter-sentiments";
+
+message Tweet{
+    int64 id=1;
+    string username=3;
+    string content=4;
+    int32 score=5;
+}
+
+message Tweets {
+    repeated Tweet tweets=1; 
+}
+
+message Pagination {
+    int64 limit=1;
+    int64 offset=2;
+}
+
+service TweetService{
+    rpc TweetsHandler(Pagination) returns (Tweets);
+}
