@@ -9,5 +9,5 @@ type SentimentResult struct {
 	ID       uint   `gorm:"primarykey"`
 	Username string `json:"username"`
 	Content  string `json:"content"`
-	Score    int    `json:"score"`
+	Score    *int32 `json:"score"`
 }

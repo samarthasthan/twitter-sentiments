@@ -4,8 +4,8 @@ services:
   kafka:
     build: ./kafka
     container_name: kafka
-    ports:
-      - ${KAFKA_EXTERNAL_PORT}:9092
+    # ports:
+    #   - ${KAFKA_EXTERNAL_PORT}:9092
     networks:
       - services
     healthcheck:
@@ -14,8 +14,8 @@ services:
           "CMD-SHELL",
           "./wait-for.sh kafka:${KAFKA_INTERNAL_PORT} -- ./kafka_setup.sh"
         ]
-      interval: 5s
-      timeout: 5s
+      interval: 30s
+      timeout: 30s
       retries: 100
       start_period: 30s
 
@@ -65,8 +65,8 @@ services:
       - DB_PORT=${MYSQL_PORT}
     networks:
       - services
-    ports:
-      - 50051:50051
+    # ports:
+    #   - 50051:50051
     command: ["./app"]
     depends_on:
       - analyser
@@ -75,13 +75,24 @@ services:
   storedb:
     image: mysql
     container_name: storedb
-    ports:
-      - 3306:3306
+    # ports:
+    #   - 3306:3306
     networks:
       - services
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
+
+  broker:
+    build: ./broker
+    container_name: broker
+    networks:
+      - services
+    ports:
+      - 8000:8000
+    command: ["./app"]
+    depends_on:
+      - store
 
 networks:
   services:

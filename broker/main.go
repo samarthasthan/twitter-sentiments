@@ -3,34 +3,42 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
+	"sync"
 	"time"
 
-	"google.golang.org/grpc"
-
+	"github.com/gofiber/fiber/v2"
+	"github.com/samarthasthan/twitter-sentiments/handler"
 	pb "github.com/samarthasthan/twitter-sentiments/proto"
 )
 
-const (
-	address = "localhost:50051"
-)
-
 func main() {
-	conn, err := grpc.Dial(address, grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("did not connect: %v", err)
-	}
-	defer conn.Close()
+	grpc := handler.NewGrpcHandler()
+	app := fiber.New()
 
-	c := pb.NewTweetServiceClient(conn)
+	var wg sync.WaitGroup
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
-	defer cancel()
+	wg.Add(1)
 
-	r, err := c.TweetsHandler(ctx, &pb.Pagination{Limit: 10, Offset: 2})
-	if err != nil {
-		log.Fatalf("%v", err)
-	}
-	fmt.Printf("%+v", r.GetTweets())
+	go func() {
+		defer wg.Done()
+		grpc.Initialise()
+	}()
 
+	wg.Wait()
+
+	app.Get("/tweets", func(c *fiber.Ctx) error {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+		res, err := grpc.Client.TweetsHandler(ctx, &pb.Pagination{Limit: 10, Offset: 1})
+		if err != nil {
+			fmt.Println(err)
+			return c.SendString(err.Error())
+		}
+
+		return c.JSON(res)
+	})
+
+	app.Listen(":8000")
+
+	defer grpc.Close()
 }
