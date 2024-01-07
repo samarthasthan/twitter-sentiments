@@ -32,15 +32,12 @@ func convertToPbTweets(sentimentResults []types.SentimentResult) *pb.Tweets {
 	var tweets []*pb.Tweet
 
 	for _, result := range sentimentResults {
-		var score int32
-		if result.Score != nil {
-			score = *result.Score
-		}
+
 		tweet := &pb.Tweet{
 			Id:       int64(result.ID),
 			Username: result.Username,
 			Content:  result.Content,
-			Score:    score,
+			Score:    int32(result.Score),
 		}
 		tweets = append(tweets, tweet)
 	}

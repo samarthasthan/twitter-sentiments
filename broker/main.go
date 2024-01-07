@@ -36,6 +36,11 @@ func main() {
 
 	wg.Wait()
 
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Welcome to Twitter-sentiments Microservices!, Navigate to /tweets to see recent 10 tweets sentiments.\nMessage: score=1 means positive and where score is null means negative")
+	})
+
+	// Tweets route
 	app.Get("/tweets", func(c *fiber.Ctx) error {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
