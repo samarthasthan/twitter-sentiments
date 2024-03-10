@@ -6,7 +6,7 @@ USER root
 
 RUN apt-get update && apt-get -y dist-upgrade
 RUN apt-get -y install build-essential libssl-dev libffi-dev libblas3 libc6 liblapack3 gcc
-RUN apt install -y netcat
+RUN apt install -y netcat-traditional
 
 ENV KAFKA_ENABLE_KRAFT=yes
 ENV ALLOW_PLAINTEXT_LISTENER=yes
