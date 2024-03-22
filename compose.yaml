@@ -1,5 +1,4 @@
 services:
-
   # Kafka
   kafka:
     build: ./kafka
@@ -12,7 +11,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "./wait-for.sh kafka:${KAFKA_INTERNAL_PORT} -- ./kafka_setup.sh"
+          "./wait-for.sh kafka:${KAFKA_INTERNAL_PORT} -- ./kafka_setup.sh",
         ]
       interval: 30s
       timeout: 30s
@@ -53,7 +52,7 @@ services:
     command: ["./app"]
     depends_on:
       - twitterapi
-  
+
   store:
     build: ./store
     container_name: store
@@ -71,7 +70,7 @@ services:
     depends_on:
       - analyser
       - storedb
-  
+
   storedb:
     image: mysql
     container_name: storedb
@@ -89,7 +88,7 @@ services:
     networks:
       - services
     ports:
-      - 8000:8000
+      - 9058:8000
     command: ["./app"]
     depends_on:
       - store
