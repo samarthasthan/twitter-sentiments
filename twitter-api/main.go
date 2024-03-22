@@ -29,6 +29,10 @@ func main() {
 
 	tweets, err := reader.ReadAll()
 
+	if err != nil {
+		panic(err)
+	}
+
 	for _, data := range tweets {
 		var tweet types.Tweet
 		tweet.Username = data[4]
