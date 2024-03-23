@@ -35,6 +35,12 @@ scp -i "secret.pem" path/tweets.csv ubuntu@publicip:github/twitter-sentiments/tw
 
 ```
 
+if you face permission denied error use given below command on VPS
+
+```
+sudo chmod 777 (remote folder)
+```
+
 Go to the project directory
 
 ```bash
